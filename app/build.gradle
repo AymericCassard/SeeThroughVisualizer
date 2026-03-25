@@ -4,16 +4,17 @@ plugins {
 
 android {
     namespace 'com.ac_pfe.seethroughvisualizer'
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdkVersion 36
+    // compileSdk {
+    //     version = release(36) {
+    //         minorApiLevel = 1
+    //     }
+    // }
 
     defaultConfig {
         applicationId "com.ac_pfe.seethroughvisualizer"
         minSdk 24
-        targetSdk 36
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
 
@@ -33,7 +34,27 @@ android {
 }
 
 dependencies {
-    def opencv_version = "4.13.0"
+    def media3_version = "1.9.2"
+    // All media3 implementations are from local build
+    // Exoplayer implementations for RTSP test
+
+    // implementation "androidx.media3:media3-exoplayer:${media3_version}"
+    // implementation "androidx.media3:media3-exoplayer-dash:${media3_version}"
+    // implementation "androidx.media3:media3-ui:${media3_version}"
+    // implementation "androidx.media3:media3-ui-compose:${media3_version}"
+    // // Test RTSP Dependancy
+    // implementation "androidx.media3:media3-exoplayer-rtsp:${media3_version}"
+
+    // Local build implementation
+    // implementation project(":media3-lib-exoplayer")
+    // implementation project(":media3-lib-exoplayer-dash")
+    // implementation project(":media3-lib-ui")
+    // implementation project(":media3-lib-ui-compose")
+    // Test RTSP Dependancy
+    // implementation project(":media3-lib-exoplayer-rtsp")
+
+
+    def opencv_version = "4.14.0"
     implementation "org.opencv:opencv:${opencv_version}"
 
     implementation libs.appcompat
