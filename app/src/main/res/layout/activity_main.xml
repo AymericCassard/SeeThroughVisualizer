@@ -7,8 +7,6 @@
    android:orientation="vertical"
    android:gravity="center">
 
-   <!-- android:paddingLeft="16dp" -->
-   <!-- android:paddingRight="16dp" -->
     <org.opencv.android.JavaCameraView
         android:id="@+id/native_camera"
         android:layout_width="match_parent"
@@ -16,25 +14,4 @@
         android:visibility="gone"
         opencv:camera_id="any"
         opencv:show_fps="true" />
-
-    <!-- OLD HALF SCREEN SETUP -->
-    <!-- [camera_view] -->
-    <!-- <org.opencv.android.JavaCameraView -->
-    <!--     android:id="@+id/native_camera" -->
-    <!--     android:layout_width="match_parent" -->
-    <!--     android:layout_height="0dip" -->
-    <!--     android:layout_weight=".50" -->
-    <!--     android:visibility="gone" -->
-    <!--     opencv:camera_id="any" -->
-    <!--     opencv:show_fps="true" /> -->
-        <!-- android:visibility="gone" -->
-
-    <!-- UDP Received Stream -->
-    <!-- <ImageView -->
-    <!--     android:id="@+id/udp_stream" -->
-    <!--     android:layout_width="match_parent" -->
-    <!--     android:layout_height="0dip" -->
-    <!--     android:layout_weight=".50" -->
-    <!--     android:visibility="gone" -->
-    <!-- /> -->
 </LinearLayout>

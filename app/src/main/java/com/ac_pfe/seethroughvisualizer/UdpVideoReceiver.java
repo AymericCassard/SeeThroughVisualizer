@@ -1,20 +1,10 @@
 package com.ac_pfe.seethroughvisualizer;
 
-import android.graphics.Bitmap;
-import android.os.Bundle;
-import android.widget.ImageView;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
@@ -27,7 +17,6 @@ public class UdpVideoReceiver {
     private int PORT = 8554;
     private static final int HEADER_SIZE = 8; // !IHH = 4 + 2 + 2
     private static final int FRAME_TIMEOUT_MS = 1000;
-    private ImageView imageView;
     private MainActivity activity;
 
     private static class FrameEntry {
@@ -38,22 +27,18 @@ public class UdpVideoReceiver {
 
     private final Map<Integer, FrameEntry> frames;
 
-    public UdpVideoReceiver(int port, ImageView imageView, MainActivity activity) {
+    public UdpVideoReceiver(int port, MainActivity activity) {
         this.PORT = port;
-        this.imageView = imageView;
         this.activity = activity;
         this.frames = new HashMap<>();
     }
 
     public void startThread() {
         new Thread(this::startReceiver).start();
-        // new Thread(this::testReceiver).start();
     }
 
     private void startReceiver() {
         try (DatagramSocket socket = new DatagramSocket(PORT)) {
-            // socket.setReuseAddress(true);
-            // socket.bind(new InetSocketAddress(8554));
             byte[] buffer = new byte[65535];
 
             while (true) {
@@ -123,13 +108,9 @@ public class UdpVideoReceiver {
 
                 if (mat.empty()) continue;
 
+                // Setting class attribute in thread could maybe create
+                // concurrent access problems
                 this.activity.setUdpImg(mat);
-                // this.activity.setUdpImg(mat);
-
-                // Bitmap bmp = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
-                // Utils.matToBitmap(mat, bmp);
-                //
-                // this.activity.runOnUiThread(() -> imageView.setImageBitmap(bmp));
             }
         } catch (Exception e) {
             Log.e("UDP", "UDP error", e);
@@ -137,12 +118,8 @@ public class UdpVideoReceiver {
     }
 
     private void testReceiver() {
-        // try (DatagramSocket socket = new DatagramSocket(8554)) {
         // Uses 0.0.0.0, this client is targeted by ROS so any address will do
         try (DatagramSocket socket = new DatagramSocket(PORT)) {
-            // socket.setReuseAddress(true);
-            // PC address
-            // socket.bind(new InetSocketAddress("192.168.1.29",PORT));
             byte[] buf = new byte[65535];
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
@@ -155,4 +132,4 @@ public class UdpVideoReceiver {
             Log.e("UDP", "UDP error", e);
         }
     }
-    }
+}

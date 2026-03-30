@@ -1,6 +1,5 @@
 package com.ac_pfe.seethroughvisualizer;
 
-import android.app.Activity;
 import android.util.Log;
 
 import org.opencv.core.Mat;
@@ -9,11 +8,7 @@ import org.opencv.core.Size;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.CvType;
 
-// import org.opencv.aruco.Aruco;
-// import org.opencv.aruco.Dictionary;
-//
 import org.opencv.objdetect.ArucoDetector;
 import org.opencv.objdetect.Dictionary;
 import org.opencv.objdetect.Objdetect;
@@ -37,7 +32,6 @@ public class Vision {
         Dictionary dictionary = Objdetect.getPredefinedDictionary(Objdetect.DICT_6X6_250);
         Mat outputImg = inputImg.clone();
         // Reduce number of channels
-        
         Imgproc.cvtColor(inputImg, outputImg, Imgproc.COLOR_BGRA2BGR);
         ArucoDetector detector = new ArucoDetector(dictionary);
         // Dictionary dictionary = Aruco.getPredefinedDictionary(Aruco.DICT_6X6_250); 
@@ -49,22 +43,11 @@ public class Vision {
         detector.detectMarkers(outputImg, corners, ids, rejectedCandidates);
 
         if (corners.size() > 0) {
-            // TODO: test without drawing, and then figure a solution
-            // Aruco.drawDetectedMarkers(outputImg, corners, ids);
             Log.i("Vision-SUCCESS", "Markers detected");
             Objdetect.drawDetectedMarkers(outputImg, corners);
         } else {
             Log.i("Vision", "No markers were detected");
             Log.i("Vision", "number of rejected candidates: " + rejectedCandidates.size());
-            // if(rejectedCandidates.size() > 0) {
-            //     try {
-            //         Log.i("Vision", "Image get total: " + outputImg.total() + " Image channels: " + outputImg.channels());
-            //         Objdetect.drawDetectedMarkers(outputImg, rejectedCandidates);
-            //     } catch (Exception e) {
-            //         Log.e("Vision", e.toString(), e);
-            //     }
-            //
-            // }
         }
 
         return outputImg;
@@ -74,12 +57,14 @@ public class Vision {
         MatOfInt ids = new MatOfInt();
         Mat charucoCorners = new Mat();
         Mat charucoIds = new Mat();
-        Dictionary dictionary = Objdetect.getPredefinedDictionary(Objdetect.DICT_5X5_1000);
         Mat outputImg = inputImg.clone();
+
         // Reduce number of channels
-        
         Imgproc.cvtColor(inputImg, outputImg, Imgproc.COLOR_BGRA2BGR);
-                   //squareLength=0.02058105555555555, markerLength=0.01683904545454545 
+
+        // All information on ChArUco board source is available in the 
+        // quadcopter-ros repository in aruco_tools
+        Dictionary dictionary = Objdetect.getPredefinedDictionary(Objdetect.DICT_5X5_1000);
         CharucoBoard charucoBoard = new CharucoBoard(
                     new Size(12, 6),
                     0.02058105555555555f,
@@ -87,9 +72,6 @@ public class Vision {
                     dictionary
                 );
         CharucoDetector detector = new CharucoDetector(charucoBoard);
-        // Dictionary dictionary = Aruco.getPredefinedDictionary(Aruco.DICT_6X6_250); 
-        // Solution is here:
-        // https://stackoverflow.com/questions/79345735/android-studio-java-cannot-resolve-symbol-getpredefineddictionary-when-using-o 
 
         Log.i("Vision", "Starting board Detection");
         Log.i("Vision", charucoIds.dump());
@@ -98,35 +80,13 @@ public class Vision {
         if (!charucoIds.empty()) {
             Log.i("Vision-SUCCESS", "Charuco board detected");
             MainActivity.charucoFlag = true;
-            // Log.i("Vision-SUCCESS", charucoCorners.dump());
-            // Log.i("Vision-SUCCESS", "charuco corners size: " + charucoCorners.size());
-            // Objdetect.drawDetectedCornersCharuco(outputImg, charucoCorners, charucoIds);
-            // Log.i("Vision-SUCCESS", "Corners Length: " + charucoCorners.rows() + ", Ids length" + charucoIds.rows());
-            // Log.i("Vision-SUCCESS", "dumb dump CORNERS: " + charucoCorners.dump());
-            // Log.i("Vision-SUCCESS", "dumb dump IDS: " + charucoIds.dump());
             for (int i = 0; i < charucoIds.rows(); i++){
                 double[] corner = charucoCorners.get(i,0);
-                // Log.i("Vision-SUCCESS", "corner " + i + ": { x: " + charucoCorners.get(i,0) + ", y: " + charucoCorners.get(i,1) + " }");
                 Log.i("Vision-SUCCESS", "corner " + i + ": { x: " + corner[0] + ", y: " + corner[1] + " }");
-                // Log.i("Vision-SUCCESS", "corner ID" + i + ": { x: " + corner[0] + "}");
-                // Imgproc.drawMarker(
-                //         outputImg, 
-                //         new Point(corner),
-                //         new Scalar(255, 0, 0) // RGB
-                //         );
             }
             outputImg = drawTextureOnCharucoBoard(outputImg, charucoCorners, charucoIds, udpImg);
         } else {
             Log.i("Vision", "No board detected");
-            // if(rejectedCandidates.size() > 0) {
-            //     try {
-            //         Log.i("Vision", "Image get total: " + outputImg.total() + " Image channels: " + outputImg.channels());
-            //         Objdetect.drawDetectedMarkers(outputImg, rejectedCandidates);
-            //     } catch (Exception e) {
-            //         Log.e("Vision", e.toString(), e);
-            //     }
-            //
-            // }
         }
 
         return outputImg;
@@ -221,32 +181,20 @@ public class Vision {
         }
 
         Log.i("Vision-SUCCESS", "w_roi: " + w_roi + " h_roi: " + h_roi);
-        // double w_roi = Math.min(outputImg.cols() - top_left.x, bottom_right.x - top_left.x);
-        // double h_roi = Math.min(outputImg.rows() - top_left.y, bottom_right.y - top_left.y);
-
-        // Rect roi = new Rect(top_left, bottom_right);
-        // Rect roi = new Rect(new Point(x_roi, y_roi), new Point(w_roi, h_roi));
         Rect roi = new Rect(x_roi, y_roi, w_roi, h_roi);
         Log.i("Vision-SUCCESS", "outputImg.cols():" + outputImg.cols() + " outputImg.rows():" + outputImg.rows());
         Log.i("Vision-SUCCESS", "Planned ROI :" + roi.toString());
 
-        // Mat red = new Mat((int)h_roi, (int)w_roi, CvType.CV_8UC3, new Scalar(0, 0, 255));
-        // Mat subMatCam = outputImg.submat(roi);
-        // red.copyTo(subMatCam);
 
         if(udpImg != null) {
             Mat udpScaled = udpImg.clone();
-            // Imgproc.resize(udpImg, udpScaled, new Size(bottom_right.x - top_left.x, bottom_right.y - top_left.y));
             Imgproc.resize(udpImg, udpScaled, new Size(w_roi, h_roi));
             Log.i("Vision-SUCCESS", "udpScaled.cols():" + udpScaled.cols() + " udpScaled.rows():" + udpScaled.rows());
-            // Mat subMatUdp = udpScaled.submat(roi);
             Mat subMatCam = outputImg.submat(roi);
 
             udpScaled.copyTo(subMatCam);
         }
 
         return outputImg;
-
-        // return outputImg;
     }
 }
