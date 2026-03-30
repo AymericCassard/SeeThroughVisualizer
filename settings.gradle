@@ -17,9 +17,6 @@ plugins {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven {
-            url "/home/acassard/Bureau/Cours/M2/pfe/android_deps/opencv_aar/outputs/maven_repo"
-        }
         google()
         mavenCentral()
     }
