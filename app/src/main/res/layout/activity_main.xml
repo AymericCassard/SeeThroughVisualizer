@@ -9,34 +9,32 @@
 
    <!-- android:paddingLeft="16dp" -->
    <!-- android:paddingRight="16dp" -->
-
-    <!-- [camera_view] -->
     <org.opencv.android.JavaCameraView
         android:id="@+id/native_camera"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight=".50"
+        android:layout_height="match_parent"
         android:visibility="gone"
         opencv:camera_id="any"
         opencv:show_fps="true" />
-        <!-- android:visibility="gone" -->
 
-    <!-- UDP Received Stream -->
-    <ImageView
-        android:id="@+id/udp_stream"
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight=".50"
-        android:visibility="gone"
-    />
-        <!-- android:visibility="gone" -->
-
-    <!-- <androidx.media3.ui.PlayerView -->
-    <!--     android:id="@+id/player_view" -->
+    <!-- OLD HALF SCREEN SETUP -->
+    <!-- [camera_view] -->
+    <!-- <org.opencv.android.JavaCameraView -->
+    <!--     android:id="@+id/native_camera" -->
     <!--     android:layout_width="match_parent" -->
     <!--     android:layout_height="0dip" -->
     <!--     android:layout_weight=".50" -->
-    <!--     /> -->
-        <!-- android:show_buffering="when_playing" -->
-        <!-- android:show_shuffle_button="true" /> -->
+    <!--     android:visibility="gone" -->
+    <!--     opencv:camera_id="any" -->
+    <!--     opencv:show_fps="true" /> -->
+        <!-- android:visibility="gone" -->
+
+    <!-- UDP Received Stream -->
+    <!-- <ImageView -->
+    <!--     android:id="@+id/udp_stream" -->
+    <!--     android:layout_width="match_parent" -->
+    <!--     android:layout_height="0dip" -->
+    <!--     android:layout_weight=".50" -->
+    <!--     android:visibility="gone" -->
+    <!-- /> -->
 </LinearLayout>

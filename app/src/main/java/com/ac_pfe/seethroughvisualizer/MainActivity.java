@@ -1,7 +1,5 @@
 package com.ac_pfe.seethroughvisualizer;
 
-// import com.ac_pfe.seethroughvisualizer.UdpVideoReceiver;
-
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -13,11 +11,13 @@ import androidx.core.view.WindowInsetsCompat;
 import org.opencv.android.CameraActivity;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.core.Core;
 
+import org.opencv.core.Scalar;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
  
@@ -57,17 +57,22 @@ public class MainActivity extends CameraActivity implements CvCameraViewListener
     private VideoCapture videoCapture; //RTSP video flux;
     private SurfaceView surfaceView;  //Surface view to display RTSP
 
+    private Mat udpImg;
+    public static boolean charucoFlag;
+
     // private PlayerView rtspPlayerView;
     // private ExoPlayer rtspPlayer;
  
     // public MainActivity(Context context) {
     public MainActivity() {
         Log.i(TAG, "Instantiated new " + this.getClass());
+        charucoFlag = false;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "called onCreate");
+        this.udpImg = null;
 
         super.onCreate(savedInstanceState);
         // EdgeToEdge.enable(this);
@@ -90,13 +95,14 @@ public class MainActivity extends CameraActivity implements CvCameraViewListener
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.native_camera);
+        // mOpenCvCameraView.setCameraIndex(2);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
 
         // UDP IMAGE STREAMING DISPLAY
-        udpVideoView = (ImageView)findViewById(R.id.udp_stream);
+        // udpVideoView = (ImageView)findViewById(R.id.udp_stream);
         udpVideoReceiver = new UdpVideoReceiver(8554, udpVideoView, this);
-        udpVideoView.setVisibility(ImageView.VISIBLE);
+        // udpVideoView.setVisibility(ImageView.VISIBLE);
         udpVideoReceiver.startThread();
 
         //
@@ -185,7 +191,20 @@ public class MainActivity extends CameraActivity implements CvCameraViewListener
 
     @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-        Mat img = Vision.drawMarkersOnImg(inputFrame.rgba());
-        return inputFrame.rgba();
+        // Mat img = Vision.drawMarkersOnImg(inputFrame.gray());
+        // Mat img = Vision.drawMarkersOnImg(inputFrame.rgba());
+        // if(!charucoFlag) {
+
+        Mat img = Vision.drawMarkersOnBoard(inputFrame.rgba(), this.udpImg);
+
+        return img;
+        // }
+        // return inputFrame.rgba();
+
+        // return inputFrame.rgba();
+    }
+
+    public void setUdpImg(Mat udpImg) {
+        this.udpImg = udpImg;
     }
 }

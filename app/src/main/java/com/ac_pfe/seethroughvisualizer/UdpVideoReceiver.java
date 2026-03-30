@@ -1,6 +1,5 @@
 package com.ac_pfe.seethroughvisualizer;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -29,7 +28,7 @@ public class UdpVideoReceiver {
     private static final int HEADER_SIZE = 8; // !IHH = 4 + 2 + 2
     private static final int FRAME_TIMEOUT_MS = 1000;
     private ImageView imageView;
-    private Activity activity;
+    private MainActivity activity;
 
     private static class FrameEntry {
         int total;
@@ -39,7 +38,7 @@ public class UdpVideoReceiver {
 
     private final Map<Integer, FrameEntry> frames;
 
-    public UdpVideoReceiver(int port, ImageView imageView, Activity activity) {
+    public UdpVideoReceiver(int port, ImageView imageView, MainActivity activity) {
         this.PORT = port;
         this.imageView = imageView;
         this.activity = activity;
@@ -93,6 +92,8 @@ public class UdpVideoReceiver {
                     continue;
                 }
 
+                Log.d("UDP", "Frame " + frameId + " chunks: " + entry.chunks.size() + "/" + entry.total);
+
                 // Reassemble frame
                 int totalSize = 0;
                 for (int i = 0; i < entry.total; i++) {
@@ -109,14 +110,26 @@ public class UdpVideoReceiver {
 
                 frames.remove(frameId);
                 // Decode image using OpenCV
-                Mat mat = Imgcodecs.imdecode(new Mat(1, assembled.length, org.opencv.core.CvType.CV_8U) {{ put(0,0,assembled); }}, Imgcodecs.IMREAD_COLOR);
+                Mat buf = new Mat(assembled.length, 1, org.opencv.core.CvType.CV_8U);
+                buf.put(0, 0, assembled);
+
+                Mat mat = Imgcodecs.imdecode(buf, Imgcodecs.IMREAD_COLOR);
+
+                if (entry.chunks.size() == entry.total) {
+                    Log.d("UDP", "Frame complete: " + frameId + " chunks=" + entry.total);
+                } else {
+                    Log.d("UDP", "Partial frame: " + entry.chunks.size() + "/" + entry.total);
+                }
 
                 if (mat.empty()) continue;
 
-                Bitmap bmp = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
-                Utils.matToBitmap(mat, bmp);
+                this.activity.setUdpImg(mat);
+                // this.activity.setUdpImg(mat);
 
-                this.activity.runOnUiThread(() -> imageView.setImageBitmap(bmp));
+                // Bitmap bmp = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+                // Utils.matToBitmap(mat, bmp);
+                //
+                // this.activity.runOnUiThread(() -> imageView.setImageBitmap(bmp));
             }
         } catch (Exception e) {
             Log.e("UDP", "UDP error", e);
